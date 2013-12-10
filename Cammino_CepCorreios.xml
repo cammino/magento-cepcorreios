@@ -1,0 +1,8 @@
+<config>
+    <modules>
+        <Cammino_CepCorreios>
+            <active>true</active>
+            <codePool>community</codePool>
+        </Cammino_CepCorreios>
+    </modules>
+</config>
