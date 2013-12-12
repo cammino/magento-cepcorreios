@@ -1,0 +1,64 @@
+<script type="text/javascript">
+
+var CepCorreios = {
+
+	urlBase: "<?php echo Mage::getUrl('cepcorreios/address/search', array('postcode' => 9999)); ?>",
+
+	init: function(jq) {
+
+		<?php if ($this->getRoutName() == "checkout"): ?>
+		CepCorreios.observe({
+			postcode: jq("input[id='billing:postcode']"),
+			street1: jq("input[id='billing:street1']"),
+			street3: jq("input[id='billing:street3']"),
+			city: jq("input[id='billing:city']"),
+			region_id: jq("select[id='billing:region_id']")			
+		});
+
+		CepCorreios.observe({
+			postcode: jq("input[id='shipping:postcode']"),
+			street1: jq("input[id='shipping:street1']"),
+			street3: jq("input[id='shipping:street3']"),
+			city: jq("input[id='shipping:city']"),
+			region_id: jq("select[id='shipping:region_id']")			
+		});
+		<?php elseif ($this->getRoutName() == "customer"): ?>
+		CepCorreios.observe({
+			postcode: jq("#zip"),
+			street1: jq("#street_1"),
+			street3: jq("#street_3"),
+			city: jq("#city"),
+			region_id: jq("#region_id")			
+		});
+		<?php endif; ?>
+
+	},
+
+	observe: function(args) {
+
+		var jq = jQuery;
+
+		if(args.postcode)
+		{
+			args.postcode.blur(function(){
+				var postcode = jq(this).val().replace(/\-/, '');
+				var url = CepCorreios.urlBase.replace(/9999/ig, postcode);
+
+				jq.getJSON(url, function(data){
+					if (!data.erro) {
+						args.street1.val(data.street1);
+						args.street3.val(data.street3);
+						args.city.val(data.city);
+						args.region_id.val(data.region);
+					}
+				});
+			});
+		}
+	}
+};
+
+jQuery(document).ready(function(jq){
+	CepCorreios.init(jq);
+});
+
+</script>

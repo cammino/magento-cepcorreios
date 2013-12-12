@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<layout>
+    <checkout_onepage_index>
+        <reference name="content">
+            <block type="cepcorreios/javascript"  name="cammino_cepcorreios_javascript" />
+        </reference>
+    </checkout_onepage_index>
+
+    <customer_account_create>
+        <reference name="content">
+            <block type="cepcorreios/javascript"  name="cammino_cepcorreios_javascript" />
+        </reference>
+    </customer_account_create>
+</layout>

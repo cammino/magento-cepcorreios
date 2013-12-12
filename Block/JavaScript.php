@@ -1,14 +1,14 @@
 <?php
 
-class Cammino_CepCorreios_Block_JavaScript extends Mage_Core_Block_Text
+class Cammino_CepCorreios_Block_JavaScript extends Mage_Payment_Block_Form
 {
     protected function _construct()
     {
+    	$this->setTemplate('cepcorreios/javascript.phtml');
         parent::_construct();
     }
-    
-    protected function _toHtml()
-    {
-    	return "<script type=\"text/javascript\">alert('test');</script>";
+
+    public function getRoutName() {
+    	return $this->getRequest()->getRouteName();
     }
 }
