@@ -1,6 +1,6 @@
 <?php
 
-class Cammino_CepCorreios_Block_JavaScript extends Mage_Payment_Block_Form
+class Cammino_Cepcorreios_Block_Javascript extends Mage_Payment_Block_Form
 {
     protected function _construct()
     {

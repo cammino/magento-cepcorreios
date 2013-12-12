@@ -1,8 +1,8 @@
 <config>
     <modules>
-        <Cammino_CepCorreios>
+        <Cammino_Cepcorreios>
             <active>true</active>
             <codePool>community</codePool>
-        </Cammino_CepCorreios>
+        </Cammino_Cepcorreios>
     </modules>
 </config>

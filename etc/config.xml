@@ -1,18 +1,18 @@
 <config>
 	<modules>
-		<Cammino_CepCorreios>
+		<Cammino_Cepcorreios>
 			<version>0.0.1</version>
-		</Cammino_CepCorreios>
+		</Cammino_Cepcorreios>
 	</modules>
 	<global>
 		<models>
 			<cepcorreios>
-				<class>Cammino_CepCorreios_Model</class>
+				<class>Cammino_Cepcorreios_Model</class>
 			</cepcorreios>
 		</models>
 		<blocks>
 			<cepcorreios>
-				<class>Cammino_CepCorreios_Block</class>
+				<class>Cammino_Cepcorreios_Block</class>
 			</cepcorreios>
 		</blocks>
 		<resources>
@@ -26,7 +26,7 @@
 			<cepcorreios>
 				<use>standard</use>
 				<args>
-					<module>Cammino_CepCorreios</module>
+					<module>Cammino_Cepcorreios</module>
 					<frontName>cepcorreios</frontName>
 				</args>
 			</cepcorreios>
@@ -37,7 +37,7 @@
                 <observers>
                     <cammino_cepcorreios>
                     	<type>model</type>
-                        <class>Cammino_CepCorreios_Model_Observer</class>
+                        <class>Cammino_Cepcorreios_Model_Observer</class>
                         <method>insertBlock</method>
                     </cammino_cepcorreios>
                 </observers>
@@ -47,7 +47,7 @@
 
 		<layout>
 			<updates>
-				<cepcorreios module="Cammino_CepCorreios">
+				<cepcorreios module="Cammino_Cepcorreios">
 					<file>cepcorreios.xml</file>
 				</cepcorreios>
 			</updates>

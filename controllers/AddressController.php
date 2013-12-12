@@ -1,5 +1,5 @@
 <?php
-class Cammino_CepCorreios_AddressController extends Mage_Core_Controller_Front_Action {
+class Cammino_Cepcorreios_AddressController extends Mage_Core_Controller_Front_Action {
 	
 	private $_postcode;
 	private $_jsonData;

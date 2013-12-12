@@ -1,13 +1,13 @@
 <script type="text/javascript">
 
-var CepCorreios = {
+var Cepcorreios = {
 
 	urlBase: "<?php echo Mage::getUrl('cepcorreios/address/search', array('postcode' => 9999)); ?>",
 
 	init: function(jq) {
 
 		<?php if ($this->getRoutName() == "checkout"): ?>
-		CepCorreios.observe({
+		Cepcorreios.observe({
 			postcode: jq("input[id='billing:postcode']"),
 			street1: jq("input[id='billing:street1']"),
 			street3: jq("input[id='billing:street3']"),
@@ -15,7 +15,7 @@ var CepCorreios = {
 			region_id: jq("select[id='billing:region_id']")			
 		});
 
-		CepCorreios.observe({
+		Cepcorreios.observe({
 			postcode: jq("input[id='shipping:postcode']"),
 			street1: jq("input[id='shipping:street1']"),
 			street3: jq("input[id='shipping:street3']"),
@@ -23,7 +23,7 @@ var CepCorreios = {
 			region_id: jq("select[id='shipping:region_id']")			
 		});
 		<?php elseif ($this->getRoutName() == "customer"): ?>
-		CepCorreios.observe({
+		Cepcorreios.observe({
 			postcode: jq("#zip"),
 			street1: jq("#street_1"),
 			street3: jq("#street_3"),
@@ -42,7 +42,7 @@ var CepCorreios = {
 		{
 			args.postcode.blur(function(){
 				var postcode = jq(this).val().replace(/\-/, '');
-				var url = CepCorreios.urlBase.replace(/9999/ig, postcode);
+				var url = Cepcorreios.urlBase.replace(/9999/ig, postcode);
 
 				jq.getJSON(url, function(data){
 					if (!data.erro) {
@@ -58,7 +58,7 @@ var CepCorreios = {
 };
 
 jQuery(document).ready(function(jq){
-	CepCorreios.init(jq);
+	Cepcorreios.init(jq);
 });
 
 </script>
