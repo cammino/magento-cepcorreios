@@ -25,15 +25,24 @@ class Cammino_Cepcorreios_AddressController extends Mage_Core_Controller_Front_A
 			
 			if(count($result) > 0){
 
-				$city_region = explode('/', str_replace( "\n", '', $result[2][1]));
-				$street = current(explode(' - ', $result[0][1]));
 
-				$address = array( 
-					'street1' => utf8_encode(trim($street)),
-					'street3' => utf8_encode(trim($result[1][1])),
-					'city' => utf8_encode(trim($city_region[0])),
-					'region' => $this->getRegionId((trim($city_region[1])))
-				);
+				if (count($result) > 2) {
+					$city_region = explode('/', str_replace( "\n", '', $result[2][1]));
+					
+					$address = array(
+						'street1' => utf8_encode(trim(current(explode(' - ', $result[0][1])))),
+						'street3' => utf8_encode(trim($result[1][1])),
+						'city' 	  => utf8_encode(trim($city_region[0])),
+						'region'  => $this->getRegionId((trim($city_region[1])))
+					);
+				} else {
+					$city_region = explode('/', str_replace( "\n", '', $result[0][1]));
+					
+					$address = array (
+						'city' 	  => utf8_encode(trim($city_region[0])),
+						'region'  => $this->getRegionId((trim($city_region[1])))
+					);
+				}
 
 				$this->_jsonData = json_encode($address);
 
