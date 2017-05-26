@@ -80,7 +80,7 @@ class Cammino_Cepcorreios_AddressController extends Mage_Core_Controller_Front_A
 		if (!empty($collection)) {
 			return end($collection)->getRegionId();
 		} else {
-			return "";
+			return $region;
 		}
 	}
 
