@@ -19,30 +19,18 @@ class Cammino_Cepcorreios_AddressController extends Mage_Core_Controller_Front_A
 		} else {
 
 			$this->_postcode = str_replace('-', '', $this->_postcode);
-			$html = $this->accessCorreios();
+			$html = $this->accessCorreiosAction();
 
-			preg_match_all('#<span class="respostadestaque">(.+?)</span>#si', $html, $result, PREG_SET_ORDER );
-			
+			$result = $html;
 			if(count($result) > 0){
-
-
-				if (count($result) > 2) {
-					$city_region = explode('/', str_replace( "\n", '', $result[2][1]));
-					
-					$address = array(
-						'street1' => utf8_encode(trim(current(explode(' - ', $result[0][1])))),
-						'street3' => utf8_encode(trim($result[1][1])),
-						'city' 	  => utf8_encode(trim($city_region[0])),
-						'region'  => $this->getRegionId((trim($city_region[1])))
-					);
-				} else {
-					$city_region = explode('/', str_replace( "\n", '', $result[0][1]));
-					
-					$address = array (
-						'city' 	  => utf8_encode(trim($city_region[0])),
-						'region'  => $this->getRegionId((trim($city_region[1])))
-					);
-				}
+				
+				$city_region = explode('/', str_replace( "\n", '', $result[0][1]));
+				
+				$address = array (
+					'city' 	  => utf8_encode(trim($city_region[0])),
+					'region'  => $this->getRegionId((trim($city_region[1])))
+				);
+			
 
 				$this->_jsonData = json_encode($address);
 
@@ -53,26 +41,46 @@ class Cammino_Cepcorreios_AddressController extends Mage_Core_Controller_Front_A
 		}
 	}
 
-	private function accessCorreios()
+	public function accessCorreiosAction()
 	{
-		$get  = array();
-		$post = array( 'cepEntrada' => $this->_postcode, 'tipoCep' => '', 'cepTemp' => '', 'metodo' => 'buscarCep' );
-		$url  = explode('?','http://m.correios.com.br/movel/buscaCepConfirma.do',2);
+		if ($this->getRequest()->getPost()) {
+            $cep = $this->getRequest()->getPost('cep', false);
+        } else {
+            $cep = $this->getRequest()->getQuery('cep', false);
+        }
 
-		if(count($url)===2){
-			$temp_get = array();
-			parse_str($url[1],$temp_get);
-			$get = array_merge($get,$temp_get);
-		}
+        $cep = preg_replace('/[^\d]/', '', $cep);
 
-		$ch = curl_init($url[0].'?'.http_build_query($get));
-		curl_setopt ($ch, CURLOPT_POST, 1);
-		curl_setopt ($ch, CURLOPT_POSTFIELDS, http_build_query($post));
-		curl_setopt ($ch, CURLOPT_FOLLOWLOCATION, 1);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $soapArgs = array(
+            'cep' => $cep,
+            'encoding' => 'UTF-8',
+            'exceptions' => 0
+        );
+        $return = '';
 
-		return curl_exec ($ch);
-	}
+        try {
+
+            $clientSoap = new SoapClient("https://apps.correios.com.br/SigepMasterJPA/AtendeClienteService/AtendeCliente?wsdl", array(
+                'soap_version' => SOAP_1_1, 'encoding' => 'utf-8', 'trace' => true, 'exceptions' => true,
+                'cache_wsdl' => WSDL_CACHE_BOTH, 'connection_timeout' => 5
+            ));
+            $result = $clientSoap->consultaCep($soapArgs);
+            $dados = $result->return;
+
+            if (is_soap_fault($result)) {
+                $return = "{ 'uf' : '', 'cidade' : '', 'bairro' : '', 'tipo_logradouro' : '', 'logradouro' : '', 'resultado' : '0', 'resultado_txt' : 'cep nao encontrado' }";
+            }else{
+                $return = "{ 'uf' : '".$dados->uf."', 'cidade' : '".$dados->cidade."', 'bairro' : '".$dados->bairro."', 'tipo_logradouro' : '', 'logradouro' : '".$dados->end."', 'resultado' : '1', 'resultado_txt' : 'sucesso%20-%20cep%20completo' }";
+            }
+
+        } catch (SoapFault $e) {
+            $return = "{ 'uf' : '', 'cidade' : '', 'bairro' : '', 'tipo_logradouro' : '', 'logradouro' : '', 'resultado' : '0', 'resultado_txt' : 'cep nao encontrado' }";
+        } catch (Exception $e) {
+            $return = "{ 'uf' : '', 'cidade' : '', 'bairro' : '', 'tipo_logradouro' : '', 'logradouro' : '', 'resultado' : '0', 'resultado_txt' : 'cep nao encontrado' }";
+        }
+         echo ($return);die;
+    }
+	
 
 	private function getRegionId($region)
 	{
@@ -82,6 +90,5 @@ class Cammino_Cepcorreios_AddressController extends Mage_Core_Controller_Front_A
 		} else {
 			return $region;
 		}
-	}
-
+	}  
 }
