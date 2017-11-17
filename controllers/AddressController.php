@@ -50,7 +50,7 @@ class Cammino_Cepcorreios_AddressController extends Mage_Core_Controller_Front_A
         }
 
         $cep = preg_replace('/[^\d]/', '', $cep);
-
+        Mage::getSingleton('core/session')->setCep($cep);
         $soapArgs = array(
             'cep' => $cep,
             'encoding' => 'UTF-8',
