@@ -19,19 +19,15 @@ class Cammino_Cepcorreios_AddressController extends Mage_Core_Controller_Front_A
 		} else {
 
 			$this->_postcode = str_replace('-', '', $this->_postcode);
-			$html = $this->accessCorreiosAction();
+			$html = $this->accessCorreiosAction(true);
 
-			$result = $html;
-			if(count($result) > 0){
-				
-				$city_region = explode('/', str_replace( "\n", '', $result[0][1]));
-				
+			if(count($html) > 0){
 				$address = array (
-					'city' 	  => utf8_encode(trim($city_region[0])),
-					'region'  => $this->getRegionId((trim($city_region[1])))
+					'city' 	  => $html->cidade,
+					'street1' => $html->end,
+					'street3' => $html->bairro,
+					'region'  => $html->uf
 				);
-			
-
 				$this->_jsonData = json_encode($address);
 
 			}
@@ -41,14 +37,16 @@ class Cammino_Cepcorreios_AddressController extends Mage_Core_Controller_Front_A
 		}
 	}
 
-	public function accessCorreiosAction()
+	public function accessCorreiosAction($simpleReturn = false)
 	{
 		if ($this->getRequest()->getPost()) {
             $cep = $this->getRequest()->getPost('cep', false);
-        } else {
+        } else if ($this->getRequest()->getQuery('cep', false)) {
             $cep = $this->getRequest()->getQuery('cep', false);
         }
-
+        else {
+        	$cep = $this->getRequest()->getParam('postcode');
+        }
         $cep = preg_replace('/[^\d]/', '', $cep);
         Mage::getSingleton('core/session')->setCep($cep);
         $soapArgs = array(
@@ -59,13 +57,14 @@ class Cammino_Cepcorreios_AddressController extends Mage_Core_Controller_Front_A
         $return = '';
 
         try {
-
             $clientSoap = new SoapClient("https://apps.correios.com.br/SigepMasterJPA/AtendeClienteService/AtendeCliente?wsdl", array(
                 'soap_version' => SOAP_1_1, 'encoding' => 'utf-8', 'trace' => true, 'exceptions' => true,
                 'cache_wsdl' => WSDL_CACHE_BOTH, 'connection_timeout' => 5
             ));
             $result = $clientSoap->consultaCep($soapArgs);
             $dados = $result->return;
+            if ($simpleReturn)
+        		return $dados;
 
             if (is_soap_fault($result)) {
                 $return = "{ 'uf' : '', 'cidade' : '', 'bairro' : '', 'tipo_logradouro' : '', 'logradouro' : '', 'resultado' : '0', 'resultado_txt' : 'cep nao encontrado' }";
@@ -78,17 +77,7 @@ class Cammino_Cepcorreios_AddressController extends Mage_Core_Controller_Front_A
         } catch (Exception $e) {
             $return = "{ 'uf' : '', 'cidade' : '', 'bairro' : '', 'tipo_logradouro' : '', 'logradouro' : '', 'resultado' : '0', 'resultado_txt' : 'cep nao encontrado' }";
         }
-         echo ($return);die;
+        
+        echo ($return);die;
     }
-	
-
-	private function getRegionId($region)
-	{
-		$collection = Mage::getResourceModel('directory/region_collection')->addCountryFilter("BR")->addRegionCodeFilter($region)->load()->getItems();
-		if (!empty($collection)) {
-			return end($collection)->getRegionId();
-		} else {
-			return $region;
-		}
-	}  
 }
