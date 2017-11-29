@@ -23,10 +23,11 @@ class Cammino_Cepcorreios_AddressController extends Mage_Core_Controller_Front_A
 
 			if(count($html) > 0){
 				$address = array (
-					'city' 	  => $html->cidade,
-					'street1' => $html->end,
-					'street3' => $html->bairro,
-					'region'  => $html->uf
+					'city' 	    => $html->cidade,
+					'street1'   => $html->end,
+					'street3'   => $html->bairro,
+					'region'    => $html->uf,
+                    'region_id' => $this->getRegionId($html->uf)
 				);
 				$this->_jsonData = json_encode($address);
 
@@ -80,4 +81,15 @@ class Cammino_Cepcorreios_AddressController extends Mage_Core_Controller_Front_A
         
         echo ($return);die;
     }
+
+    // retorna código do estado, dado a UF
+    private function getRegionId($region) {
+        $collection = Mage::getResourceModel('directory/region_collection')->addCountryFilter("BR")->addRegionCodeFilter($region)->load()->getItems();
+        if (!empty($collection)) {
+            return end($collection)->getRegionId();
+        } else {
+            return $region;
+        }
+    }  
+
 }
